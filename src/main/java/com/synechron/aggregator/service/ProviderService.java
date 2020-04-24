@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.synechron.aggregator.model.Provider;
-import com.synechron.aggregator.repositor.ProviderRepository;
+import com.synechron.aggregator.repository.ProviderRepository;
 
 import lombok.extern.slf4j.Slf4j;
 

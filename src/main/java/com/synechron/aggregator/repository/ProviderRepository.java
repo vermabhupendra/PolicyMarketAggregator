@@ -1,4 +1,4 @@
-package com.synechron.aggregator.repositor;
+package com.synechron.aggregator.repository;
 
 import java.util.Optional;
 
