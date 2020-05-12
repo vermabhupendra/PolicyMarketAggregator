@@ -1,5 +1,6 @@
 package com.synechron.aggregator.service;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,13 @@ public class ProviderService {
 		log.debug("Provider Name ====== :" + providerName);
 		Optional<Provider> providerObj = providerRepository.findByProviderName(providerName);
 		return providerObj.isPresent() ? providerObj.get() : null;
+	}
 
+	public List<Provider> getAllProviders() {
+		return providerRepository.findAll();
+	}
+
+	public Provider getById(int id) {
+		return providerRepository.getOne(id);
 	}
 }

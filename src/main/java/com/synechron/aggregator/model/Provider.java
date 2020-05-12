@@ -1,7 +1,5 @@
 package com.synechron.aggregator.model;
 
-import java.io.Serializable;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -23,12 +21,7 @@ import lombok.NoArgsConstructor;
 @Component
 @AllArgsConstructor
 @NoArgsConstructor
-public class Provider implements Serializable {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+public class Provider {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,14 +37,14 @@ public class Provider implements Serializable {
 	@NotNull(message = "Provider plan url must not be null.")
 	private String providerGetPlanUrl;
 
-	@NotBlank(message = "Provider response type must not be empty.")
-	@Size(min = 2, message = "Provider response type should be at least 2 character long.")
-	@NotNull(message = "Provider response type must not be null.")
-	private String providerResponseType;
-
-//	@NotBlank(message = "Provider response format must not be empty.")
-//	@Size(min = 2, message = "Provider response format should be at least 2 character long.")
-//	@NotNull(message = "Provider response format must not be null.")
+	@NotBlank(message = "Provider response format must not be empty.")
+	@Size(min = 2, message = "Provider response format should be at least 2 character long.")
+	@NotNull(message = "Provider response format must not be null.")
 	private String providerResponseFormat;
+
+	@NotBlank(message = "Provider response must not be empty.")
+	@Size(min = 2, message = "Provider response should be at least 2 character long.")
+	@NotNull(message = "Provider response must not be null.")
+	private String providerResponse;
 
 }
