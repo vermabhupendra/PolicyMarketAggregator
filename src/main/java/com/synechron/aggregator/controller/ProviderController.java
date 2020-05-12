@@ -43,35 +43,25 @@ public class ProviderController {
 
 	@GetMapping(path = "/provider/getAllPlans")
 	public ResponseEntity<Response> getAllPlans() {
-
 		List<List<ProviderDetail>> mainList = new ArrayList<List<ProviderDetail>>();
-
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		HttpEntity<String> entity = new HttpEntity<String>(headers);
 		restTemplate = new RestTemplate();
-
 		String url;
-
 		JSONArray jsonArray1 = new JSONArray();
 		List<Provider> list = providerService.getAllProviders();
-		System.out.println("=========== " + list);
-
-		// Converting to JSON Array
+		log.debug("=========== " + list);
 		for (Provider temp : list) {
-
 			url = temp.getProviderGetPlanUrl();
 			jsonArray1 = restTemplate.exchange(url, HttpMethod.GET, entity, JSONArray.class).getBody();
-			System.out.println("JSON Array : =====" + jsonArray1.toString());
+			log.debug("JSON Array : =====" + jsonArray1.toString());
 			try {
 				String str = jsonArray1.toString();
-
 				ArrayList<String> arr = new ArrayList<>();
 				int pos1 = 0, pos2;
 				String str2 = str.substring(1, str.length() - 1);
-
 				int index1 = str2.lastIndexOf("},");
-
 				for (int i = 0; i < str2.length(); i++) {
 					if (i <= index1) {
 						char x = str2.charAt(i); // }
@@ -87,8 +77,7 @@ public class ProviderController {
 
 				String lastStr = str2.substring(index1 + 2, str2.length());
 				arr.add(lastStr);
-
-				List<ProviderDetail> subList = transform(arr, temp.getProviderId());
+				List<ProviderDetail> subList = getProvidersPlanList(arr, temp.getProviderId());
 				mainList.add(subList);
 			} catch (Exception ex) {
 				log.debug(ex.getMessage());
@@ -96,26 +85,24 @@ public class ProviderController {
 		}
 		return new ResponseEntity<Response>(new Response("List of Plans.", mainList), HttpStatus.BAD_REQUEST);
 
-		// my code
+		// method-2
 //		List<Provider> providers = providerService.getAllProviders();
 //		for (Provider providerObj : providers) {
 //			final String url = providerObj.getProviderGetPlanUrl();
-//			System.out.println("web service url ======= : " + url);
+//			log.debug("web service url ======= : " + url);
 //			getDataFromUrl(providerObj);
 //		}
 //
 //		if (providers.size() != 0) {
-////			System.out.println(providers);
+////			log.debug(providers);
 //			return new ResponseEntity<Response>(new Response("List of Plans.", providers), HttpStatus.BAD_REQUEST);
 //		} else {
 //			return new ResponseEntity<Response>(new Response("No provider found.", null), HttpStatus.BAD_REQUEST);
 //		}
 	}
 
-	public List<ProviderDetail> transform(ArrayList<String> listdata, int id) {
-
+	public List<ProviderDetail> getProvidersPlanList(ArrayList<String> listdata, int id) {
 		List<ProviderDetail> subList = new ArrayList<>();
-
 		for (String temp : listdata) {
 			ProviderDetail obj = new ProviderDetail();
 			if (temp.charAt(0) != '{') {
@@ -139,12 +126,9 @@ public class ProviderController {
 
 		JSONParser parser = new JSONParser();
 		try {
-
 			JSONObject json = (JSONObject) parser.parse(p.getProviderResponse());
 			JSONObject json2 = (JSONObject) parser.parse(temp);
-
 			for (Object o : json.entrySet()) {
-
 				if (o.toString().contains("planId")) {
 					String str = o.toString();
 					providerPlanId = str.substring(str.lastIndexOf("=") + 1);
@@ -194,7 +178,6 @@ public class ProviderController {
 			tempObj.setProviderName(providerProviderNameValue);
 			tempObj.setPlanName(providerPlanNameValue);
 			tempObj.setPlanCoverage(providerPlanCoverageValue);
-
 		} catch (Exception e) {
 			log.info("" + e.getMessage());
 		}
@@ -207,8 +190,7 @@ public class ProviderController {
 		headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
 		HttpEntity<String> entity = new HttpEntity<String>("parameters", headers);
 
-		System.out.println();
-		System.out.println("Response Data in DB ======= " + providerObj.getProviderResponse());
+		log.debug("Response Data in DB ======= " + providerObj.getProviderResponse());
 //		Response Data in DB ======= 
 //		{
 //		"planId": "planId","planName": "planName","providerName": "insuranceProviderName","planCoverage":"planCoverage"
@@ -216,8 +198,8 @@ public class ProviderController {
 
 		ResponseEntity<Response> result = restTemplate.exchange(providerObj.getProviderGetPlanUrl(), HttpMethod.GET,
 				entity, Response.class);
-//		System.out.println();
-//		System.out.println("Providers Plans JSON Array Result ===== " + result.getBody().getData());
+//		log.debug();
+//		log.debug("Providers Plans JSON Array Result ===== " + result.getBody().getData());
 //		Providers Plans JSON Array Result ===== 
 //		[
 //		{planId=1, planName=Max Silver Plan, insuranceProviderName=Max Life Insurance, planType=Life, planPremiumAmount=60000.0, planCoverage=1000000.0, age=21, city=Indore, isActive=1}, 
@@ -225,8 +207,8 @@ public class ProviderController {
 //		]
 
 //		JSONArray jsonArray1 = restTemplate.exchange(providerObj.getProviderGetPlanUrl(), HttpMethod.GET, entity, JSONArray.class).getBody();
-//		System.out.println();
-//		System.out.println("JSON Array : ===== " + result.getBody().getData());
+//		log.debug();
+//		log.debug("JSON Array : ===== " + result.getBody().getData());
 //		JSON Array : =====
 //		[
 //		{"planId":1,"planName":"Max Silver Plan","insuranceProviderName":"Max Life Insurance","planType":"Life","planPremiumAmount":60000.0,"planCoverage":1000000.0,"age":21,"city":"Indore","isActive":1},
@@ -242,28 +224,27 @@ public class ProviderController {
 		String s1 = strResponse.substring(strResponse.indexOf("{") + 1, strResponse.indexOf("}"));
 
 		String[] strArray = s1.split(",");
-//		System.out.println("String array========= " + Arrays.toString(strArray));
+//		log.debug("String array========= " + Arrays.toString(strArray));
 //		"planId": "planId", "planName": "planName", "providerName": "providerName", "planCoverage":"planCover"
 
 		for (String entries : strArray) {
 			String str2 = entries.substring(entries.indexOf(":")).trim();
 			String strValue = str2.substring(str2.indexOf("\"") + 1, str2.lastIndexOf("\""));
-			System.out.println("final key ========= " + strValue);
+			log.debug("final key ========= " + strValue);
 
 		}
 
-		System.out.println();
-		System.out.println("==============  Now For Json Array ==================");
+		log.debug("==============  Now For Json Array ==================");
 		String strJsonArray = jsonArrayData.toString();
 
 		String strNew = strJsonArray.substring(1, strJsonArray.length() - 1);
-		System.out.println("json array to object ====== " + strNew);
+		log.debug("json array to object ====== " + strNew);
 //		json array to object ====== 
 //		{planId=1, planName=Max Silver Plan, insuranceProviderName=Max Life Insurance, planType=Life, planPremiumAmount=60000.0, planCoverage=1000000.0, age=21, city=Indore, isActive=1},
 //		{planId=2, planName=Max Super Crore, insuranceProviderName=Max Life Insurance, planType=Life, planPremiumAmount=120000.0, planCoverage=1.0E7, age=25, city=Ujjain, isActive=1}
 
 		String[] strDataJsonArray = strNew.split("},");
-		System.out.println("String Data Json Array========= " + Arrays.toString(strDataJsonArray));
+		log.debug("String Data Json Array========= " + Arrays.toString(strDataJsonArray));
 
 	}
 
